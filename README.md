@@ -233,7 +233,7 @@ npm run dev
 ```bash
 Frontend → http://localhost:5173
 
-Backend → http://localhost:8000
+Backend → import.meta.env.VITE_API_URL
 ```
 
 ---
