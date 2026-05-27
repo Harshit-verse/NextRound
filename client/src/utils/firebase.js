@@ -13,7 +13,7 @@ const firebaseConfig = {
 }; */
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_APIKEY,
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "nextroundai-77caa.firebaseapp.com",
   projectId: "nextroundai-77caa",
   storageBucket: "nextroundai-77caa.firebasestorage.app",
