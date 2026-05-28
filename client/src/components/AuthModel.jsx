@@ -2,7 +2,7 @@ import React from 'react'
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { FaTimes } from "react-icons/fa";
-import Something from "../pages/LoginPage"
+import LoginPage from "../pages/LoginPage"
 
 function AuthModel({onClose}) {
     const {userData} = useSelector((state)=>state.user)
@@ -20,7 +20,7 @@ function AuthModel({onClose}) {
             <button onClick={onClose} className='absolute top-8 right-5 text-gray-800 hover:text-black text-xl'>
              <FaTimes size={18}/>
             </button>
-            <Auth isModel={true}/>
+            <LoginPage isModel={true}/>
 
 
         </div>
