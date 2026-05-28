@@ -16,11 +16,28 @@ const app = express()
 //}))
 
 
+//app.use(cors({
+ // origin: [
+  //  "http://localhost:5173",
+  //  "https://next-round-nu.vercel.app",
+   // "https://next-round-c6drviqt4-harshit-singhs-projects-bd89257d.vercel.app"
+ // ],
+  //credentials: true
+//}))
+
+
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://next-round-nu.vercel.app"
-  ],
+  origin: function(origin, callback) {
+    if (
+      !origin ||
+      origin.includes("vercel.app") ||
+      origin === "http://localhost:5173"
+    ) {
+      callback(null, true)
+    } else {
+      callback(new Error("Not allowed by CORS"))
+    }
+  },
   credentials: true
 }))
 
