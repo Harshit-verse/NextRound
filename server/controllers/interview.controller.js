@@ -55,9 +55,14 @@ Return strictly JSON:
     ];
 
 
-    const aiResponse = await askAi(messages)
+ const aiResponse = await askAi(messages)
 
-    const parsed = JSON.parse(aiResponse);
+const cleaned = aiResponse
+  .replace(/```json/g, "")
+  .replace(/```/g, "")
+  .trim();
+
+const parsed = JSON.parse(cleaned);
 
     fs.unlinkSync(filepath)
 
