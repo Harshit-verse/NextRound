@@ -31,7 +31,7 @@ app.use(cors({
     if (
       !origin ||
       origin.includes("vercel.app") ||
-      origin === "http://localhost:5173"
+      origin.includes("localhost")
     ) {
       callback(null, true)
     } else {
