@@ -73,8 +73,18 @@ function Pricing() {
       },{withCredentials:true})
       
 
+      const razorpayKey = result.data.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID;
+
+      if (!razorpayKey) {
+        throw new Error("Razorpay key is missing. Please configure the payment key.");
+      }
+
+      if (!window.Razorpay) {
+        throw new Error("Razorpay checkout failed to load. Please refresh and try again.");
+      }
+
       const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      key: razorpayKey,
       amount: result.data.amount,
       currency: "INR",
       name: "NextRound",
@@ -101,6 +111,7 @@ function Pricing() {
       setLoadingPlan(null);
     } catch (error) {
      console.log(error)
+     alert(error.response?.data?.message || error.message || "Error in opening checkout")
      setLoadingPlan(null);
     }
   }

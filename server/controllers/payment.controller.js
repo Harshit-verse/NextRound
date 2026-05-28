@@ -10,6 +10,10 @@ export const createOrder = async (req,res) => {
       return res.status(400).json({ message: "Invalid plan data" });
     }
 
+    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+      return res.status(500).json({ message: "Razorpay is not configured on the server." });
+    }
+
      const options = {
       amount: amount * 100, // convert to paise
       currency: "INR",
@@ -27,7 +31,7 @@ export const createOrder = async (req,res) => {
       status: "created",
     });
 
-    return res.json(order);
+    return res.json({ ...order, keyId: process.env.RAZORPAY_KEY_ID });
 
     
     } catch (error) {
@@ -43,6 +47,10 @@ export const verifyPayment = async (req,res) => {
       razorpay_signature} = req.body
 
       const body = razorpay_order_id + "|" + razorpay_payment_id;
+
+    if (!process.env.RAZORPAY_KEY_SECRET) {
+      return res.status(500).json({ message: "Razorpay signature verification is not configured." });
+    }
 
     const expectedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
