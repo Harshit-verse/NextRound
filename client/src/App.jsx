@@ -1,7 +1,7 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import Home from './pages/Home'
-import Auth from "./pages/LoginPage"
+import LoginPage from "./pages/LoginPage"
 import { useEffect } from 'react'
 import axios from 'axios'
 import { useDispatch } from 'react-redux'
@@ -32,7 +32,7 @@ function App() {
   return (
     <Routes>
       <Route path='/' element={<Home/>}/>
-      <Route path='/auth' element={<Auth/>}/>
+      <Route path='/auth' element={<LoginPage/>}/>
       <Route path='/interview' element={<InterviewPage/>}/>
       <Route path='/history' element={<InterviewHistory/>}/>
       <Route path='/pricing' element={<Pricing/>}/>

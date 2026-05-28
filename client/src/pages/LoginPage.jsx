@@ -9,7 +9,7 @@ import axios from 'axios';
 import { ServerUrl } from '../App';
 import { useDispatch } from 'react-redux';
 import { setUserData } from '../redux/userSlice';
-function Auth({isModel = false}) {
+function LoginPage({isModel = false}) {
     const dispatch = useDispatch()
 
     const handleGoogleAuth = async () => {
@@ -82,5 +82,4 @@ function Auth({isModel = false}) {
     </div>
   )
 }
-
-export default Auth
+  export default LoginPage
