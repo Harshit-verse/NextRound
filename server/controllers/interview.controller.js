@@ -4,6 +4,28 @@ import { askAi } from "../services/openRouter.service.js";
 import User from "../models/user.model.js";
 import Interview from "../models/interview.model.js";
 
+const cleanupFile = (filepath) => {
+  if (filepath && fs.existsSync(filepath)) {
+    fs.unlinkSync(filepath);
+  }
+};
+
+const parseAiJson = (aiResponse) => {
+  const cleaned = aiResponse
+    .replace(/```json/gi, "")
+    .replace(/```/g, "")
+    .trim();
+
+  const jsonStart = cleaned.indexOf("{");
+  const jsonEnd = cleaned.lastIndexOf("}");
+
+  if (jsonStart === -1 || jsonEnd === -1) {
+    throw new Error("AI did not return JSON.");
+  }
+
+  return JSON.parse(cleaned.slice(jsonStart, jsonEnd + 1));
+};
+
 export const analyzeResume = async (req, res) => {
   try {
     if (!req.file) {
@@ -32,6 +54,11 @@ export const analyzeResume = async (req, res) => {
       .replace(/\s+/g, " ")
       .trim();
 
+    if (!resumeText) {
+      cleanupFile(filepath);
+      return res.status(400).json({ message: "Could not read text from this PDF. Please upload a text-based resume PDF." });
+    }
+
     const messages = [
       {
         role: "system",
@@ -54,43 +81,29 @@ Return strictly JSON:
       }
     ];
 
+    const aiResponse = await askAi(messages);
+    const parsed = parseAiJson(aiResponse);
 
-console.log("FILE:", req.file);
-console.log("BODY:", req.body);
-console.log("RESUME TEXT:", resumeText?.slice(0,500));
-
- const aiResponse = await askAi(messages)
- console.log("RAW AI RESPONSE:", aiResponse);
-
-const cleaned = aiResponse
-  .replace(/```json/g, "")
-  .replace(/```/g, "")
-  .trim();
-
-const parsed = JSON.parse(cleaned);
-
-    fs.unlinkSync(filepath)
+    cleanupFile(filepath);
 
 
     res.json({
-      role: parsed.role,
-      experience: parsed.experience,
-      projects: parsed.projects,
-      skills: parsed.skills,
+      success: true,
+      role: parsed.role || "",
+      experience: parsed.experience || "",
+      projects: Array.isArray(parsed.projects) ? parsed.projects : [],
+      skills: Array.isArray(parsed.skills) ? parsed.skills : [],
       resumeText
     });
 
   } catch (error) {
     console.error("RESUME ANALYZE ERROR:", error);
 
-    if (req.file && fs.existsSync(req.file.path)) {
-        fs.unlinkSync(req.file.path);
-    }
+    cleanupFile(req.file?.path);
 
     return res.status(500).json({
-        success: false,
-        message: error.message,
-        stack: error.stack
+      success: false,
+      message: error.message || "Failed to analyze resume."
     });
 }
 };

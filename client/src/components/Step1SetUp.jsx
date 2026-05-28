@@ -25,11 +25,13 @@ function Step1SetUp({ onStart }) {
     const [resumeText, setResumeText] = useState("");
     const [analysisDone, setAnalysisDone] = useState(false);
     const [analyzing, setAnalyzing] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
 
     const handleUploadResume = async () => {
         if (!resumeFile || analyzing) return;
         setAnalyzing(true)
+        setErrorMessage("");
 
         const formdata = new FormData()
         formdata.append("resume", resumeFile)
@@ -50,12 +52,14 @@ function Step1SetUp({ onStart }) {
 
         } catch (error) {
             console.log(error)
+            setErrorMessage(error.response?.data?.message || "Resume analysis failed. Please try another PDF.");
             setAnalyzing(false);
         }
     }
 
     const handleStart = async () => {
         setLoading(true)
+        setErrorMessage("");
         try {
            const result = await axios.post(ServerUrl + "/api/interview/generate-questions" , {role, experience, mode , resumeText, projects, skills } , {withCredentials:true}) 
            console.log(result.data)
@@ -67,6 +71,7 @@ function Step1SetUp({ onStart }) {
 
         } catch (error) {
             console.log(error)
+            setErrorMessage(error.response?.data?.message || "Could not start interview. Please check your details and try again.");
             setLoading(false)
         }
     }
@@ -191,6 +196,10 @@ function Step1SetUp({ onStart }) {
                                     {resumeFile ? resumeFile.name : "Click to upload resume (Optional)"}
                                 </p>
 
+                                {errorMessage && (
+                                    <p className='mt-4 text-sm font-medium text-red-600'>{errorMessage}</p>
+                                )}
+
                                 {resumeFile && (
                                     <motion.button
                                         whileHover={{ scale: 1.02 }}
@@ -209,6 +218,10 @@ function Step1SetUp({ onStart }) {
                             </motion.div>
 
 
+                        )}
+
+                        {errorMessage && analysisDone && (
+                            <p className='text-sm font-medium text-red-600'>{errorMessage}</p>
                         )}
 
                         {analysisDone && (
