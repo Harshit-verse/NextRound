@@ -55,7 +55,12 @@ Return strictly JSON:
     ];
 
 
+console.log("FILE:", req.file);
+console.log("BODY:", req.body);
+console.log("RESUME TEXT:", resumeText?.slice(0,500));
+
  const aiResponse = await askAi(messages)
+ console.log("RAW AI RESPONSE:", aiResponse);
 
 const cleaned = aiResponse
   .replace(/```json/g, "")
@@ -76,14 +81,18 @@ const parsed = JSON.parse(cleaned);
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("RESUME ANALYZE ERROR:", error);
 
     if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
+        fs.unlinkSync(req.file.path);
     }
 
-    return res.status(500).json({ message: error.message });
-  }
+    return res.status(500).json({
+        success: false,
+        message: error.message,
+        stack: error.stack
+    });
+}
 };
 
 
